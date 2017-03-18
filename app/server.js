@@ -26,6 +26,7 @@ router.get("/",function(req,res){
 });
 
 router.route('/names')
+//This adds a new item to the DB.
 .post(function(req,res){
 	var newName = new NameObject();
 	newName.name = req.body.name;
@@ -39,7 +40,50 @@ router.route('/names')
 			console.log("error!");
 		}
 	});
+})
+//This gets all the names in the DB.
+.get(function(req,res){
+	NameObject.find(function(err,names){
+		if(err)
+			res.send(err);
+		res.json(names);
+	});
 });
+
+//get a specific name by id!
+router.route('/names/:name_id')
+.get(function(req,res){
+	NameObject.findById(req.params.name_id,function(err,name){
+		if(err)
+			res.send(err);
+		res.json(name);
+	});
+})
+.put(function(req,res){
+	NameObject.findById(req.params.name_id,function(err,name){
+		if(err)
+			res.send(err);
+
+		name.name = req.body.name;
+
+		name.save(function(err){
+			if(err)
+				res.send(err);
+			res.json({ message:'Name Updated!'});
+		})
+	});
+})
+.delete(function(req,res){
+	NameObject.remove({
+		_id: req.params.name_id
+	},function(err,name){
+		if(err)
+			res.send(err);
+		res.send({message:"deleted name!"});
+	});
+});
+
+
 
 app.use('/api',router);
 
