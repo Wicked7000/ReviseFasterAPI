@@ -5,7 +5,10 @@ var bodyParser = require('body-parser');
 var NameObject = require('../app/models/name');
 
 var mongoose =  require("mongoose");
-mongoose.connect("mongodb://Wicked:Helen12345@ds135830.mlab.com:35830/revisefaster")
+var uri = "mongodb://Test:test@ds135820.mlab.com:35820/revisefaster";
+mongoose.connect(uri);
+var conn = mongoose.connection;
+conn.on("error",console.error.bind(console,"Connection error:"));
 
 app.use(bodyParser.urlencoded({ extended: true}));
 app.use(bodyParser.json());
@@ -22,15 +25,19 @@ router.get("/",function(req,res){
 	res.json({ message: 'hooray it works!' });
 });
 
-router.route('/names').post(function(req,res){
-	var Name = new NameObject();
-	Name.name = req.body.name;
-	console.log(Name.name);
+router.route('/names')
+.post(function(req,res){
+	var newName = new NameObject();
+	newName.name = req.body.name;
+	console.log(newName.name);
 
-	Name.save(function(err){
-		if(err)
-			res.send(err);
-		res.json({ message:"Name Created!"});
+	newName.save(function(err){
+		if(!err){
+			console.log("no error!");
+			res.json({message:"Name Created!"});
+		}else{
+			console.log("error!");
+		}
 	});
 });
 
